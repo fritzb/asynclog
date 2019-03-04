@@ -25,7 +25,10 @@ RingBuffer::RingBuffer(unsigned int size, bool threadSafe)
 }
 
 RingBuffer::~RingBuffer() {
-    delete[] buffer_;
+    if (buffer_) {
+        delete[] buffer_;
+        buffer_ = nullptr;
+    }
 }
 
 RingBuffer::Stats RingBuffer::getStats() const {
