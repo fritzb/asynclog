@@ -48,8 +48,8 @@ uint32_t Log::allocateId() {
     uint32_t id = globalId_;
     globalId_++;
 
-    if (globalId_ == LOG_BEGIN_PATTERN ||
-        globalId_ == LOG_TRAILER_PATTERN) {
+    if (globalId_ == START_PATTERN ||
+        globalId_ == END_PATTERN) {
         globalId_++;
     }
     return id;
@@ -75,7 +75,7 @@ uint32_t Log::setHeader(char *dst,
     }
 
     // Set the start pattern
-    hdr->pattern = LOG_BEGIN_PATTERN;
+    hdr->pattern = START_PATTERN;
     hdr->id = id;
     hdr->length = length;
     hdr->functionName = function_name;
@@ -129,7 +129,7 @@ void Log::traceVargs(bool with_ts, const char *function_name, uint32_t line_numb
     uint32_t id = allocateId();
 
     // Add trailer marker
-    Log::Trailer marker = { id, LOG_TRAILER_PATTERN };
+    Log::Trailer marker = { id, END_PATTERN };
     memcpy(dst, &marker, sizeof(Log::Trailer));
     buffer_len += sizeof(Log::Trailer);
     allignedBufferLen = LOG_MEM_ALIGN(buffer_len);
@@ -196,7 +196,7 @@ bool Log::getLog(uint32_t index, char *buf) {
     memcpy(&debugHdr_, read_hdr, sizeof(Header));
 
     // Validate begining marker
-    if (read_hdr->pattern != LOG_BEGIN_PATTERN) {
+    if (read_hdr->pattern != START_PATTERN) {
         debugIndex_ = index;
         hdrPatErr++;
         debugState1_ = 1;
@@ -237,7 +237,7 @@ bool Log::getLog(uint32_t index, char *buf) {
     trailer_ptr = (Trailer *)(((uint8_t *)hdr) + length - sizeof(Trailer));
 
     // Construct a trailer
-    Trailer trailer = { id, LOG_TRAILER_PATTERN };
+    Trailer trailer = { id, END_PATTERN };
 
     if (memcmp(trailer_ptr, &trailer, sizeof(Trailer)) != 0) {
         memcpy(&debugTrailer_, trailer_ptr, sizeof(Trailer));
@@ -263,7 +263,7 @@ bool Log::isEntryValid(uint32_t index, char *buf) {
 // Find current or next header from the circular buffer
 uint32_t Log::getNextHeader(uint32_t index, char *buf) {
     // Re-allign pointer
-    Marker pattern = LOG_BEGIN_PATTERN;
+    Marker pattern = START_PATTERN;
     uint32_t loop = 0;
 
     do {
@@ -596,7 +596,7 @@ void Log::printState() const {
 }
 
 Log::Log(const char *filename, int lines, bool enableCollect, bool redirectStd)
-        : marker_(LOG_MAIN_MARKER), version_(LOG_VERSION), ringBuffer_(new RingBuffer(lines)),
+        : marker_(MARKER), version_(VERSION), ringBuffer_(new RingBuffer(lines)),
           redirectStd_(redirectStd), stringFormat_(new StringFormat()) {
     strncpy(filename_, filename, sizeof(filename_));
     fileHandle_ = createTracefile(filename, redirectStd);
@@ -608,12 +608,19 @@ Log::~Log() {
     if (collect_) {
         collect_->setEnable(false);
         delete collect_;
+        collect_ = nullptr;
+    }
+    if (stream_) {
+        delete stream_;
+        stream_ = nullptr;
     }
     if (fileHandle_) {
         fflush(fileHandle_);
         fclose(fileHandle_);
         fileHandle_ = nullptr;
     }
-    if (stream_) delete stream_;
-    if (ringBuffer_) delete ringBuffer_;
+    if (ringBuffer_) {
+        delete ringBuffer_;
+        ringBuffer_ = nullptr;
+    }
 }
