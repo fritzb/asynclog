@@ -100,7 +100,7 @@ int StreamBuffered::bufferHasRoom(unsigned int len) {
     return (len <= left);
 }
 
-shared_ptr<Stream> Stream::stdoutStream = nullptr;
+std::shared_ptr<Stream> Stream::stdoutStream = nullptr;
 
 
 StreamBuffered::StreamBuffered() {

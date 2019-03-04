@@ -25,15 +25,13 @@ limitations under the License.
 #include <memory>
 #include "stream.h"
 
-using namespace std;
-
 class Stream {
 public:
     static const unsigned int LOG_STREAM_BUFFER_SIZE = 1024*1024;
     static const unsigned int LOG_STREAM_COMPRESSED_BUFFER_SIZE = 1024*1024;
 
-    static shared_ptr<Stream> stdoutStream;
-    static shared_ptr<Stream> getStdoutStream() {
+    static std::shared_ptr<Stream> stdoutStream;
+    static std::shared_ptr<Stream> getStdoutStream() {
         if (stdoutStream == nullptr) {
             stdoutStream = create(stdout, UNCOMPRESSED);
         }
