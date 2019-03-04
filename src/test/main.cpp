@@ -17,6 +17,6 @@ void performance_test1(shared_ptr<Log> log) {
 
 int main() {
     auto log = std::make_shared<Log>();
-    log->traceVargs(true, __func__, __LINE__, 'I', "Hello world %d!\n", 1000L);
+    log->info("Hello world %d!\n", 1000L);
     log->dump();
 }
