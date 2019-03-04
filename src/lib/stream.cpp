@@ -37,6 +37,7 @@ void Stream::write(char *s, unsigned len) {
 void Stream::cleanup() {
     flush();
     fclose(fileHandle_);
+    fileHandle_ = nullptr;
 }
 
 int Stream::setFile(FILE *file) {
@@ -56,7 +57,7 @@ Stream::Stats Stream::getStats() {
 
 int Stream::flush() {
     if (fileHandle_) {
-        return fflush(fileHandle_);
+        fflush(fileHandle_);
     }
     return 0;
 }
