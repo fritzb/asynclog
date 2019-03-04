@@ -104,16 +104,8 @@ uint32_t Log::getLastWrittenIndex() {
 #define LOG_MAX_LOG_TRACE_LINE 4096
 void Log::traceVargs(bool with_ts, const char *function_name, uint32_t line_number, char tag, const char *s, ...) {
     va_list va;
-    int i = 0;
-    bool insidePercent = false;
-    uint8_t u8;
-    uint16_t u16;
-    uint32_t u32;
-    uint64_t u64;
-    double d;
     uint32_t location;
     uint32_t buffer_len, allignedBufferLen;
-    void *ptr;
     char buffer[LOG_MAX_LOG_TRACE_LINE + 1];
     char *dst = buffer;
 
@@ -337,18 +329,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
     const char *s;
     char format[32];
     uint32_t buf_index;
-    uint32_t start, i;
-    bool eat;
-    uint64_t u64;
-    uint32_t u32;
-    uint8_t u8;
-    uint16_t u16;
-    double d;
-    uint32_t string_len;
-    void *ptr;
     uint8_t *start_buf;
-    int max_string;
-    char *start_dst_buffer = dst;
     uint32_t hdrid;
 
     *string_length = 0;
@@ -414,7 +395,6 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
     buf_index = indexInc(0, sizeof(Header));
 
     // Parse the format string
-    i = 0;
     s = &hdr->format[0];
     start_buf = (uint8_t *)hdr;
 
@@ -597,7 +577,7 @@ void Log::printState() const {
 
 Log::Log(const char *filename, int lines, bool enableCollect, bool redirectStd)
         : marker_(MARKER), version_(VERSION), ringBuffer_(make_shared<RingBuffer>(lines)),
-          redirectStd_(redirectStd), stringFormat_(new StringFormat()) {
+          redirectStd_(redirectStd), stringFormat_(make_shared<StringFormat>()) {
     strncpy(filename_, filename, sizeof(filename_));
     fileHandle_ = createTracefile(filename, redirectStd);
     stream_ = Stream::create(fileHandle_);

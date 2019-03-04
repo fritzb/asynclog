@@ -121,7 +121,7 @@ private:
     Log::Trailer debugTrailer_;
     Header debugHdr_;
 
-    StringFormat *stringFormat_;
+    std::shared_ptr<StringFormat> stringFormat_;
 
     char * getTraceFilename() const;
     FILE* createTracefile(const char *filename, bool redirStd);
