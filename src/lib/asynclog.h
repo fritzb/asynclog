@@ -25,11 +25,11 @@ limitations under the License.
 
 class Log {
 public:
-    static const uint32_t LOG_BUFFER_SIZE_DEFAULT = 20*1024*1024;
-    static const uint64_t LOG_MAIN_MARKER = 0xaabbfaceb00cddeeLL;
-    static const uint32_t LOG_VERSION = 1;
-    static const uint32_t LOG_BEGIN_PATTERN = 0xfeedface;
-    static const uint32_t LOG_TRAILER_PATTERN = 0xfafebeef;
+    static const uint32_t DEFAULT_BUFFER_SIZE = 20*1024*1024;
+    static const uint64_t MARKER = 0xaf1cfeefbeefae0dLL;
+    static const uint32_t VERSION = 1;
+    static const uint32_t START_PATTERN = 0xbeedface;
+    static const uint32_t END_PATTERN = 0xfadebeef;
 
     enum Level {
         off,
@@ -73,7 +73,7 @@ public:
     void printState() const;
 
     Log(const char *filename="rxtrace.txt",
-        int lines=LOG_BUFFER_SIZE_DEFAULT,
+        int lines=DEFAULT_BUFFER_SIZE,
         bool enableCollect=true,
         bool redirectStd=false);
     ~Log();
