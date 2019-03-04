@@ -1017,20 +1017,8 @@ void Log::printState() const {
     collect_->dumpState(collectorState, sizeof(collectorState));
     printf("\n%s\n", collectorState);
 
-    Stream::Stats streamStats = stream_->getStats();
-    printf("\n");
-    printf("Stream stats:\n");
-    printf("Zlib error: %u\n", streamStats.zlibError);
-    printf("Zlib error no: %d\n", streamStats.zlibErrorNo);
-    printf("Zlib deflate init error: %u\n", streamStats.zlibDeflateInitError);
-    printf("Zlib deflate error: %u\n", streamStats.zlibDeflateError);
-    printf("IO error no: %u\n", streamStats.ioErrorNo);
-    printf("IO error: %u\n", streamStats.ioError);
-    printf("IO write error: %u\n", streamStats.ioWriteError);
-    printf("IO read error: %u\n", streamStats.ioReadError);
-    printf("IO seek error: %u\n", streamStats.ioSeekError);
-    printf("Compress error: %u\n", streamStats.compressError);
-    printf("Flush write count: %u\n", streamStats.flushWriteCount);
+    stream_->dumpState(state, sizeof(state));
+    printf("\n%s\n", state);
 }
 
 Log::Log(const char *filename, int lines, bool enableCollect, bool redirectStd)

@@ -64,6 +64,7 @@ public:
     void write(char *s, unsigned len);
     int flush();
     Stream::Stats getStats();
+    void dumpState(char *buffer, int length) const;
 
     Stream();
     ~Stream();
