@@ -3,6 +3,8 @@ High performance thread-safe in-memory logging with lockless ring buffer data st
 
 Example:
 ```
+#include "asynclog.h"
+
 int main() {
     auto log = std::make_shared<Log>();
     log->info("Hello world %d!\n", 1000L);
