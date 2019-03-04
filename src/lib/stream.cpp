@@ -19,8 +19,9 @@ limitations under the License.
 
 #include <cstring>
 #include <cstdlib>
-#include "stream.h"
 #include <exception>
+#include <memory>
+#include "stream.h"
 
 Stream::Stream() {
 }
@@ -65,20 +66,21 @@ Stream::~Stream() {
     cleanup();
 }
 
-Stream * Stream::create(FILE *file, Stream::CompressedMode mode) {
+std::shared_ptr<Stream> Stream::create(FILE *file, Stream::CompressedMode mode) {
     int ret;
-    Stream *ctx;
+    std::shared_ptr<Stream> ctx;
+
 
     switch (mode) {
         case UNCOMPRESSED:
-            ctx = new Stream();
+            ctx = std::make_shared<Stream>();
             if (!ctx) {
                 return nullptr;
             }
             break;
 
         case BUFFERED_UNCOMPRESS:
-            ctx = new StreamBuffered();
+            ctx = std::make_shared<StreamBuffered>();
             if (!ctx) {
                 return nullptr;
             }
@@ -88,7 +90,6 @@ Stream * Stream::create(FILE *file, Stream::CompressedMode mode) {
     // Set FILE
     ret = ctx->setFile(file);
     if (ret != 0) {
-        delete ctx;
         return nullptr;
     }
     return ctx;
@@ -99,7 +100,7 @@ int StreamBuffered::bufferHasRoom(unsigned int len) {
     return (len <= left);
 }
 
-Stream *Stream::stdoutStream = nullptr;
+shared_ptr<Stream> Stream::stdoutStream = nullptr;
 
 
 StreamBuffered::StreamBuffered() {

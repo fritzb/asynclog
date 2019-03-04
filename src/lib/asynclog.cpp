@@ -32,7 +32,7 @@ limitations under the License.
 #include "asynclog.h"
 #include "ringbuffer.h"
 
-
+using namespace std;
 
 uint32_t Log::getTime(struct timespec *ts, char *ts_buf, unsigned int ts_buf_size) {
     struct tm result;
@@ -884,7 +884,7 @@ unsigned int Log::firstLine(void) {
     return 0;
 }
 
-uint32_t Log::dumpRange(uint32_t start, uint32_t end, bool continueOnFailure, Stream *stream) {
+uint32_t Log::dumpRange(uint32_t start, uint32_t end, bool continueOnFailure, shared_ptr<Stream> stream) {
     char traceBuffer[LOG_MAX_LOG_TRACE_LINE * 2];
     uint32_t new_i, i;
     int traceBufferLen = 0;
@@ -956,7 +956,7 @@ char * Log::getTraceFilename() const {
     return (char *)filename_;
 }
 
-void Log::dump(Stream *stream, bool detail) {
+void Log::dump(shared_ptr<Stream> stream, bool detail) {
     char buf[1000];
     uint32_t i, end;
 
@@ -1034,31 +1034,21 @@ void Log::printState() const {
 }
 
 Log::Log(const char *filename, int lines, bool enableCollect, bool redirectStd)
-        : marker_(MARKER), version_(VERSION), ringBuffer_(new RingBuffer(lines)),
+        : marker_(MARKER), version_(VERSION), ringBuffer_(make_shared<RingBuffer>(lines)),
           redirectStd_(redirectStd) {
     strncpy(filename_, filename, sizeof(filename_));
     fileHandle_ = createTracefile(filename, redirectStd);
     stream_ = Stream::create(fileHandle_);
-    collect_ = new Collect(this, enableCollect);
+    collect_ = make_shared<Collect>(this, enableCollect);
 }
 
 Log::~Log() {
     if (collect_) {
         collect_->setEnable(false);
-        delete collect_;
-        collect_ = nullptr;
-    }
-    if (stream_) {
-        delete stream_;
-        stream_ = nullptr;
     }
     if (fileHandle_) {
         fflush(fileHandle_);
         fclose(fileHandle_);
         fileHandle_ = nullptr;
-    }
-    if (ringBuffer_) {
-        delete ringBuffer_;
-        ringBuffer_ = nullptr;
     }
 }
