@@ -36,7 +36,6 @@ void Stream::write(char *s, unsigned len) {
 
 void Stream::cleanup() {
     flush();
-    fclose(fileHandle_);
     fileHandle_ = nullptr;
 }
 

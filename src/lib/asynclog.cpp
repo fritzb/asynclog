@@ -1048,14 +1048,14 @@ Log::~Log() {
         delete collect_;
         collect_ = nullptr;
     }
+    if (stream_) {
+        delete stream_;
+        stream_ = nullptr;
+    }
     if (fileHandle_) {
         fflush(fileHandle_);
         fclose(fileHandle_);
         fileHandle_ = nullptr;
-    }
-    if (stream_) {
-        delete stream_;
-        stream_ = nullptr;
     }
     if (ringBuffer_) {
         delete ringBuffer_;
