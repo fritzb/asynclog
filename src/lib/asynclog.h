@@ -24,8 +24,6 @@ limitations under the License.
 #include "stream.h"
 #include "stringformat.h"
 
-using namespace std;
-
 class Log {
 public:
     static const uint32_t DEFAULT_BUFFER_SIZE = 20*1024*1024;
@@ -69,8 +67,8 @@ public:
     };
 
     void traceVargs(bool with_ts, const char *function_name, uint32_t line_number, char tag, const char *s, ...);
-    uint32_t dumpRange(uint32_t start, uint32_t end, bool continueOnFailure, shared_ptr<Stream> stream);
-    void dump(shared_ptr<Stream> stream=nullptr, bool detail=false);
+    uint32_t dumpRange(uint32_t start, uint32_t end, bool continueOnFailure, std::shared_ptr<Stream> stream);
+    void dump(std::shared_ptr<Stream> stream=nullptr, bool detail=false);
 
     void dumpState(char *buffer, int bufferLen) const;
     void printState() const;
@@ -84,9 +82,9 @@ public:
 private:
     uint64_t marker_;
     uint32_t version_;
-    shared_ptr<Collect> collect_;
-    shared_ptr<RingBuffer> ringBuffer_;
-    shared_ptr<Stream> stream_;
+    std::shared_ptr<Collect> collect_;
+    std::shared_ptr<RingBuffer> ringBuffer_;
+    std::shared_ptr<Stream> stream_;
     bool redirectStd_;
     FILE *fileHandle_;
     char filename_[1000];
@@ -126,7 +124,7 @@ private:
     char * getTraceFilename() const;
     FILE* createTracefile(const char *filename, bool redirStd);
     uint32_t getLastWrittenIndex();
-    shared_ptr<Stream> getStream() { return stream_; }
+    std::shared_ptr<Stream> getStream() { return stream_; }
     uint32_t allocateId();
 
     void setLastWrittenIndex(uint32_t index);
