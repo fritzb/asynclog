@@ -16,11 +16,11 @@ cmake:
 	make -C docker all
 	make -C docker push
 
-cmake-build/asynclogTest: cmake-build
-	make -C cmake-build asynclogTest
+cmake-build/memlogTest: cmake-build
+	make -C cmake-build memlogTest
 
 
-test: cmake-build/asynclogTest
-	cd cmake-build && ./asynclogTest
+test: cmake-build/memlogTest
+	cd cmake-build && ./memlogTest
 
 ci: build test
