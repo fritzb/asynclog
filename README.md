@@ -26,7 +26,7 @@ cat rxtrace.txt
 
 # benchmark
 
-250ms for 1M logs on Macbook Air i5
+254ms for 1M logs on Macbook Air i5
 ```
 void performance_test1(shared_ptr<Log> log) {
     chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now();
