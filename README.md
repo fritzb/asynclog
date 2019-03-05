@@ -28,6 +28,18 @@ cat rxtrace.txt
 
 250ms for 1M logs on Macbook Air i5
 ```
+void performance_test1(shared_ptr<Log> log) {
+    chrono::high_resolution_clock::time_point t1 = chrono::high_resolution_clock::now();
+    for (auto i = 0; i < 1000000; i++) {
+        log->info("Hello world %d!\n", i);
+    }
+    chrono::high_resolution_clock::time_point t2 = chrono::high_resolution_clock::now();
+
+    auto duration = chrono::duration_cast<chrono::microseconds>(t2 - t1).count();
+    cout << "1 millions write in " << duration << " microseconds" << endl;
+}
+
+
 ./memlogTest
 [2019 Mar  5 03:12:14.760732000:0:I:main:20] Hello world 1000!
 [2019 Mar  5 03:12:14.760766000:1:I:main:21] Hello world 1001!
