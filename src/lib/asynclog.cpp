@@ -34,6 +34,26 @@ limitations under the License.
 
 using namespace std;
 
+void Log::strlcpy(char *dst, const char *src, size_t siz) {
+    char *d = dst;
+    const char *s = src;
+    size_t n = siz;
+    /* Copy as many bytes as will fit */
+    if (n != 0) {
+        while (--n != 0) {
+            if ((*d++ = *s++) == '\0')
+                break;
+        }
+    }
+    /* Not enough room in dst, add NUL and traverse rest of src */
+    if (n == 0) {
+        if (siz != 0)
+            *d = '\0';		/* NUL-terminate dst */
+        while (*s++)
+            ;
+    }
+}
+
 uint32_t Log::getTime(struct timespec *ts, char *ts_buf, unsigned int ts_buf_size) {
     struct tm result;
 
@@ -698,7 +718,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
                             case 'o':
                             case 'i':
                                 i++;
-                                strncpy(format, &s[start], i-start);
+                                strlcpy(format, &s[start], i-start + 1);
                                 u16 = memGetWord(start_buf, buf_index);
                                 buf_index = indexInc(buf_index, sizeof(u16));
                                 dst += sprintf(dst, format, u16);
@@ -712,7 +732,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
                                     case 'u':
                                     case 'o':
                                         i++;
-                                        strncpy(format, &s[start], i-start);
+                                        strlcpy(format, &s[start], i-start + 1);
                                         u16 = memGetWord(start_buf, buf_index);
                                         buf_index = indexInc(buf_index, sizeof(u16));
                                         dst += sprintf(dst, format, u16);
@@ -724,7 +744,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
 
                     case 'c':
                         i++;
-                        strncpy(format, &s[start], i-start);
+                        strlcpy(format, &s[start], i-start + 1);
                         u8 = memGetByte(start_buf, buf_index);
                         buf_index = indexInc(buf_index, sizeof(u8));
                         dst += sprintf(dst, format, u8);
@@ -737,7 +757,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
                     case 'x':
                     case 'X':
                         i++;
-                        strncpy(format, &s[start], i-start);
+                        strlcpy(format, &s[start], i-start + 1);
                         u32 = memGetInt(start_buf, buf_index);
                         buf_index = indexInc(buf_index, sizeof(u32));
                         dst += sprintf(dst, format, u32);
@@ -746,7 +766,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
 
                     case 'f':
                         i++;
-                        strncpy(format, &s[start], i-start);
+                        strlcpy(format, &s[start], i-start + 1);
                         d = memGetDouble(start_buf, buf_index);
                         buf_index = indexInc(buf_index, sizeof(d));
                         dst += sprintf(dst, format, d);
@@ -755,7 +775,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
 
                     case 'p':
                         i++;
-                        strncpy(format, &s[start], i-start);
+                        strlcpy(format, &s[start], i-start + 1);
                         ptr = (void *)memGetPtr(start_buf, buf_index);
                         buf_index = indexInc(buf_index, sizeof(void *));
                         dst += sprintf(dst, format, ptr);
@@ -765,7 +785,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
                         // string
                     case 's':
                         i++;
-                        strncpy(format, &s[start], i-start);
+                        strlcpy(format, &s[start], i-start + 1);
                         //printf("%s\n", format);
 
                         //string_len = getString(buf_index, dst);
@@ -796,7 +816,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
                                 i++;
                                 if (s[i] && (s[i] == 'd' || s[i] == 'i' || s[i] == 'x' || s[i] == 'u' || s[i] == 'X')) {
                                     i++;
-                                    strncpy(format, &s[start], i-start);
+                                    strlcpy(format, &s[start], i-start + 1);
                                     u64 = memGetLong64(start_buf, buf_index);
                                     buf_index = indexInc(buf_index, sizeof(u64));
                                     dst += sprintf(dst, format, u64);
@@ -810,7 +830,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
                             case 'x':
                             case 'X':
                                 i++;
-                                strncpy(format, &s[start], i-start);
+                                strlcpy(format, &s[start], i-start + 1);
                                 u32 = memGetInt(start_buf, buf_index);
                                 buf_index = indexInc(buf_index, sizeof(u32));
                                 dst += sprintf(dst, format, u32);
@@ -819,7 +839,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
 
                             case 'f':
                                 i++;
-                                strncpy(format, &s[start], i-start);
+                                strlcpy(format, &s[start], i-start + 1);
                                 d = memGetDouble(start_buf, buf_index);
                                 buf_index = indexInc(buf_index, sizeof(d));
                                 dst += sprintf(dst, format, d);

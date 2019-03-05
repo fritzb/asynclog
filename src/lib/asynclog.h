@@ -120,6 +120,7 @@ private:
     Log::Trailer debugTrailer_;
     Header debugHdr_;
 
+    void strlcpy(char *dst, const char *src, size_t siz);
     char * getTraceFilename() const;
     FILE* createTracefile(const char *filename, bool redirStd);
     uint32_t getLastWrittenIndex();
