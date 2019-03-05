@@ -18,5 +18,7 @@ void performance_test1(shared_ptr<Log> log) {
 int main() {
     auto log = std::make_shared<Log>();
     log->info("Hello world %d!\n", 1000L);
+    log->info("Hello world %d!\n", 1001L);
+    log->info("Hello world %d!\n", 1002L);
     log->dump();
 }
