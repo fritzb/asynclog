@@ -24,6 +24,8 @@ limitations under the License.
 #include "stream.h"
 #include "stringformat.h"
 
+#define info(msg, ...) traceVargs(true, __func__, __LINE__, 'I', msg, ##__VA_ARGS__)
+
 class Log {
 public:
     static const uint32_t DEFAULT_BUFFER_SIZE = 20*1024*1024;

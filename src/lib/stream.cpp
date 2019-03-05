@@ -26,6 +26,23 @@ limitations under the License.
 Stream::Stream() {
 }
 
+
+void Stream::dumpState(char *buffer, int length) const {
+    buffer += sprintf(buffer, "\n");
+    buffer += sprintf(buffer, "Stream stats:\n");
+    buffer += sprintf(buffer, "Zlib error: %u\n", stats.zlibError);
+    buffer += sprintf(buffer, "Zlib error no: %d\n", stats.zlibErrorNo);
+    buffer += sprintf(buffer, "Zlib deflate init error: %u\n", stats.zlibDeflateInitError);
+    buffer += sprintf(buffer, "Zlib deflate error: %u\n", stats.zlibDeflateError);
+    buffer += sprintf(buffer, "IO error no: %u\n", stats.ioErrorNo);
+    buffer += sprintf(buffer, "IO error: %u\n", stats.ioError);
+    buffer += sprintf(buffer, "IO write error: %u\n", stats.ioWriteError);
+    buffer += sprintf(buffer, "IO read error: %u\n", stats.ioReadError);
+    buffer += sprintf(buffer, "IO seek error: %u\n", stats.ioSeekError);
+    buffer += sprintf(buffer, "Compress error: %u\n", stats.compressError);
+    buffer += sprintf(buffer, "Flush write count: %u\n", stats.flushWriteCount);
+}
+
 void Stream::write(char *s, unsigned len) {
     size_t written;
 
