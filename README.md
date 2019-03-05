@@ -26,7 +26,7 @@ cat rxtrace.txt
 
 # benchmark
 
-350ms for 1M logs on Macbook Air i5
+250ms for 1M logs on Macbook Air i5
 ```
 ./memlogTest
 [2019 Mar  5 03:12:14.760732000:0:I:main:20] Hello world 1000!
