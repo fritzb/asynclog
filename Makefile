@@ -1,5 +1,5 @@
 build: cmake-build
-	make -C cmake-build
+	cd cmake-build && make
 
 start:
 	docker run --rm -ti -e CWD=${PWD} -v /Users:/Users -v ~/.gitconfig:/root/.gitconfig -v ${PWD}:${PWD} fritzb/cmake

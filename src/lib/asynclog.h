@@ -22,6 +22,7 @@ limitations under the License.
 #include <pthread.h>
 #include "ringbuffer.h"
 #include "stream.h"
+#include "stringformat.h"
 
 #define info(msg, ...) traceVargs(true, __func__, __LINE__, 'I', msg, ##__VA_ARGS__)
 
@@ -56,7 +57,6 @@ public:
         Log::Marker     pattern;
         uint32_t        location; // optional
         uint32_t        id; // optional
-        uint32_t        threadId;
         const char      *format;
         const char      *functionName;
         uint16_t        lineNumber;
@@ -120,28 +120,13 @@ private:
     Log::Trailer debugTrailer_;
     Header debugHdr_;
 
+    std::shared_ptr<StringFormat> stringFormat_;
+
     char * getTraceFilename() const;
     FILE* createTracefile(const char *filename, bool redirStd);
     uint32_t getLastWrittenIndex();
     std::shared_ptr<Stream> getStream() { return stream_; }
     uint32_t allocateId();
-
-    /* Memory buffer utilities */
-    uint32_t memSetByte(char *s, uint8_t u8);
-    uint32_t memSetWord(char *s, uint16_t u16);
-    uint32_t memSetInt(char *s, uint32_t u32);
-    uint32_t memSetLong64(char *s, uint64_t u64);
-    uint32_t memSetDouble(char *s, double d);
-    uint32_t memSetPtr(char *s, void *src);
-    uint32_t memSetString(char *s, const char *src);
-    uint8_t memGetByte(uint8_t *buf, uint32_t dstIndex);
-    uint16_t memGetWord(uint8_t *buf, uint32_t dstIndex);
-    uint32_t memGetInt(uint8_t *buf, uint32_t dstIndex);
-    double memGetDouble(uint8_t *buf, uint32_t dstIndex);
-    uint64_t memGetLong64(uint8_t *buf, uint32_t dstIndex);
-    void * memGetPtr(uint8_t *buf, uint32_t dstIndex);
-    uint32_t memGetString(uint8_t *buf, uint32_t buf_index, char *dst);
-    uint32_t memGetString(uint8_t *buf, uint32_t buf_index, char *dst, uint32_t maxStringLength);
 
     void setLastWrittenIndex(uint32_t index);
 
