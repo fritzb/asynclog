@@ -1,4 +1,4 @@
-# asynclog
+# memlog
 High performance thread-safe in-memory logging with lockless ring buffer data structure.
 The library is efficiently fast and non-blocking (Really non-blocking as no system call will be used when producing the log)  The in-memory buffer will be persistet to a log file asynchronously via a background thread.
 
