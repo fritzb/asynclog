@@ -26,4 +26,4 @@ cat rxtrace.txt
 
 # Benchmark
 
-1 millions log is completed in 350ms
+1 millions log took 350ms
