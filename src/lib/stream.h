@@ -1,4 +1,4 @@
-/* Copyright 2019 asynclog Authors. All Rights Reserved.
+/* Copyright 2019 memlog Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@ limitations under the License.
 // Stream class
 //
 
-#ifndef ASYNCLOG_STREAM_H
-#define ASYNCLOG_STREAM_H
+#ifndef MEMLOG_STREAM_H
+#define MEMLOG_STREAM_H
 
 #include <stdint.h>
 #include <stdio.h>
