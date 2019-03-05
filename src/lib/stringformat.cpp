@@ -25,7 +25,7 @@ limitations under the License.
 #include "stringformat.h"
 #define LOG_MAX_LOG_TRACE_LINE (4096)
 
-void StringFormat::parseStringFormat(char *dst, const char *s, va_list va) {
+void StringFormat::decodeStringFormat(char **dst_p, const char *src, va_list va) {
     int i = 0;
     bool insidePercent = false;
     uint8_t u8;
@@ -37,10 +37,11 @@ void StringFormat::parseStringFormat(char *dst, const char *s, va_list va) {
     uint32_t buffer_len, allignedBufferLen;
     void *ptr;
     char buffer[LOG_MAX_LOG_TRACE_LINE + 1];
+    char *dst = *dst_p;
 
-    while (s[i] != 0) {
+    while (src[i] != 0) {
         // PERCENT
-        if (s[i] == '%') {
+        if (src[i] == '%') {
             if (insidePercent) {
                 insidePercent = false;
                 goto next;
@@ -52,9 +53,9 @@ void StringFormat::parseStringFormat(char *dst, const char *s, va_list va) {
         if (insidePercent) {
             insidePercent = false;
 
-            switch (s[i]) {
+            switch (src[i]) {
                 case 'h':
-                    switch (s[i+1]) {
+                    switch (src[i+1]) {
                         case 'o':
                         case 'x':
                         case 'X':
@@ -70,10 +71,10 @@ void StringFormat::parseStringFormat(char *dst, const char *s, va_list va) {
                             break;
 
                         case 'h':
-                            if ((s[i+2] == 'x') ||
-                                (s[i+2] == 'X') ||
-                                (s[i+2] == 'u') ||
-                                (s[i+2] == 'o')) {
+                            if ((src[i+2] == 'x') ||
+                                (src[i+2] == 'X') ||
+                                (src[i+2] == 'u') ||
+                                (src[i+2] == 'o')) {
                                 u16 = va_arg(va, unsigned int);
                                 dst += memSetWord(dst, u16);
                                 continue;
@@ -115,13 +116,13 @@ void StringFormat::parseStringFormat(char *dst, const char *s, va_list va) {
                     break;
 
                 case 'l':
-                    switch (s[i+1]) {
+                    switch (src[i+1]) {
                         case 'l':
-                            if ((s[i+2] == 'x') ||
-                                (s[i+2] == 'X') ||
-                                (s[i+2] == 'd') ||
-                                (s[i+2] == 'i') ||
-                                (s[i+2] == 'u')) {
+                            if ((src[i+2] == 'x') ||
+                                (src[i+2] == 'X') ||
+                                (src[i+2] == 'd') ||
+                                (src[i+2] == 'i') ||
+                                (src[i+2] == 'u')) {
                                 i += 2;
                                 u64 = va_arg(va, long long);
                                 dst += memSetLong64(dst, u64);
@@ -150,8 +151,8 @@ void StringFormat::parseStringFormat(char *dst, const char *s, va_list va) {
                     break;
 
                 default:
-                    if (s[i] == '-' || s[i] == '+' || s[i] == ' ' || s[i] == '#' ||
-                        s[i] == '.' || (isdigit(s[i]))) {
+                    if (src[i] == '-' || src[i] == '+' || src[i] == ' ' || src[i] == '#' ||
+                        src[i] == '.' || (isdigit(src[i]))) {
                         insidePercent = true;
                         goto next;
                     }
@@ -166,14 +167,36 @@ void StringFormat::parseStringFormat(char *dst, const char *s, va_list va) {
         next:
         i++;
     }
+
+    *dst_p = dst;
 }
 
 uint32_t StringFormat::indexInc(uint32_t index, uint32_t v) {
     return index + v;
 }
 
+void StringFormat::strlcpy(char *dst, const char *src, size_t siz) {
+    char *d = dst;
+    const char *s = src;
+    size_t n = siz;
+    /* Copy as many bytes as will fit */
+    if (n != 0) {
+        while (--n != 0) {
+            if ((*d++ = *s++) == '\0')
+                break;
+        }
+    }
+    /* Not enough room in dst, add NUL and traverse rest of src */
+    if (n == 0) {
+        if (siz != 0)
+            *d = '\0';		/* NUL-terminate dst */
+        while (*s++)
+            ;
+    }
+}
 
-uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, char *dst, int maxLen, uint32_t *buf_index_p, int *string_length) {
+uint32_t StringFormat::encodeStringFormat(const char *s, uint8_t *start_buf, char *dst, int maxLen,
+                                          uint32_t *buf_index_p, int *string_length) {
     void *ptr;
     double d;
     char format[32];
@@ -232,7 +255,7 @@ uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, cha
                             case 'o':
                             case 'i':
                                 i++;
-                                strncpy(format, &s[start], i-start+1);
+                                strlcpy(format, &s[start], i-start + 1);
                                 u16 = memGetWord(start_buf, buf_index);
                                 buf_index = indexInc(buf_index, sizeof(u16));
                                 dst += sprintf(dst, format, u16);
@@ -246,7 +269,7 @@ uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, cha
                                     case 'u':
                                     case 'o':
                                         i++;
-                                        strncpy(format, &s[start], i-start+1);
+                                        strlcpy(format, &s[start], i-start + 1);
                                         u16 = memGetWord(start_buf, buf_index);
                                         buf_index = indexInc(buf_index, sizeof(u16));
                                         dst += sprintf(dst, format, u16);
@@ -258,7 +281,7 @@ uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, cha
 
                     case 'c':
                         i++;
-                        strncpy(format, &s[start], i-start+1);
+                        strlcpy(format, &s[start], i-start + 1);
                         u8 = memGetByte(start_buf, buf_index);
                         buf_index = indexInc(buf_index, sizeof(u8));
                         dst += sprintf(dst, format, u8);
@@ -271,7 +294,7 @@ uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, cha
                     case 'x':
                     case 'X':
                         i++;
-                        strncpy(format, &s[start], i-start+1);
+                        strlcpy(format, &s[start], i-start + 1);
                         u32 = memGetInt(start_buf, buf_index);
                         buf_index = indexInc(buf_index, sizeof(u32));
                         dst += sprintf(dst, format, u32);
@@ -280,7 +303,7 @@ uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, cha
 
                     case 'f':
                         i++;
-                        strncpy(format, &s[start], i-start+1);
+                        strlcpy(format, &s[start], i-start + 1);
                         d = memGetDouble(start_buf, buf_index);
                         buf_index = indexInc(buf_index, sizeof(d));
                         dst += sprintf(dst, format, d);
@@ -289,7 +312,7 @@ uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, cha
 
                     case 'p':
                         i++;
-                        strncpy(format, &s[start], i-start+1);
+                        strlcpy(format, &s[start], i-start + 1);
                         ptr = (void *)memGetPtr(start_buf, buf_index);
                         buf_index = indexInc(buf_index, sizeof(void *));
                         dst += sprintf(dst, format, ptr);
@@ -299,7 +322,7 @@ uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, cha
                         // string
                     case 's':
                         i++;
-                        strncpy(format, &s[start], i-start+1);
+                        strlcpy(format, &s[start], i-start + 1);
                         //printf("%s\n", format);
 
                         //string_len = getString(buf_index, dst);
@@ -328,7 +351,7 @@ uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, cha
                                 i++;
                                 if (s[i] && (s[i] == 'd' || s[i] == 'i' || s[i] == 'x' || s[i] == 'u' || s[i] == 'X')) {
                                     i++;
-                                    strncpy(format, &s[start], i-start+1);
+                                    strlcpy(format, &s[start], i-start + 1);
                                     u64 = memGetLong64(start_buf, buf_index);
                                     buf_index = indexInc(buf_index, sizeof(u64));
                                     dst += sprintf(dst, format, u64);
@@ -342,7 +365,7 @@ uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, cha
                             case 'x':
                             case 'X':
                                 i++;
-                                strncpy(format, &s[start], i-start+1);
+                                strlcpy(format, &s[start], i-start + 1);
                                 u32 = memGetInt(start_buf, buf_index);
                                 buf_index = indexInc(buf_index, sizeof(u32));
                                 dst += sprintf(dst, format, u32);
@@ -351,7 +374,7 @@ uint32_t StringFormat::decodeStringFormat(const char *s, uint8_t *start_buf, cha
 
                             case 'f':
                                 i++;
-                                strncpy(format, &s[start], i-start+1);
+                                strlcpy(format, &s[start], i-start + 1);
                                 d = memGetDouble(start_buf, buf_index);
                                 buf_index = indexInc(buf_index, sizeof(d));
                                 dst += sprintf(dst, format, d);

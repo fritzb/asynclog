@@ -23,7 +23,7 @@ limitations under the License.
 #include <memory>
 #include "stream.h"
 
-Stream::Stream() {
+Stream::Stream() : fileHandle_(nullptr) {
 }
 
 
@@ -62,7 +62,9 @@ int Stream::setFile(FILE *file) {
         return 0;
     }
 
-    flush();
+    if (fileHandle_) {
+        flush();
+    }
     fileHandle_ = file;
 
     return 0;

@@ -23,7 +23,15 @@ limitations under the License.
 class StringFormat {
 
 public:
-    void parseStringFormat(char *dst, const char *src, va_list va);
+    void decodeStringFormat(char **dst, const char *src, va_list va);
+    uint32_t encodeStringFormat(const char *s, uint8_t *start_buf, char *dst, int maxLen, uint32_t *buf_index_p,
+                                int *string_length);
+
+private:
+    uint32_t getStringCorruptedCount;
+
+
+    void strlcpy(char *dst, const char *src, size_t siz);
     uint32_t indexInc(uint32_t index, uint32_t v);
 
     /* Memory buffer utilities */
@@ -42,8 +50,6 @@ public:
     void * memGetPtr(uint8_t *buf, uint32_t dstIndex);
     uint32_t memGetString(uint8_t *buf, uint32_t buf_index, char *dst);
     uint32_t memGetString(uint8_t *buf, uint32_t buf_index, char *dst, uint32_t maxStringLength);
-    uint32_t getStringCorruptedCount;
-    uint32_t decodeStringFormat(const char *s, uint8_t *start_buf, char *dst, int maxLen, uint32_t *buf_index_p, int *string_length);
 };
 
 #endif //ASYNCLOG_STRINGFORMAT_H

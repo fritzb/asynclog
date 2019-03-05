@@ -57,7 +57,6 @@ public:
         Log::Marker     pattern;
         uint32_t        location; // optional
         uint32_t        id; // optional
-        uint32_t        threadId;
         const char      *format;
         const char      *functionName;
         uint16_t        lineNumber;

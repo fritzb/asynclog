@@ -111,7 +111,7 @@ void Log::traceVargs(bool with_ts, const char *function_name, uint32_t line_numb
 
     va_start(va, s);
     dst += sizeof(Log::Header);
-    stringFormat_->parseStringFormat(dst, s, va);
+    stringFormat_->decodeStringFormat(&dst, s, va);
     va_end(va);
 
     // Copy the temporary buffer
@@ -323,7 +323,7 @@ int Log::cmpHeader(Header *entry1, Header *entry2) {
 // Return -1 on print failure, and the error message string on the dst.
 //
 int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
-                      bool retry, Header *printed_header, int *string_length) {
+                      bool retry, Header *printed_header, int *stringLength) {
     char scratch_buffer_[LOG_MAX_LOG_TRACE_LINE * 2];
     Header *hdr = (Header *)&scratch_buffer_[0];
     const char *s;
@@ -331,8 +331,9 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
     uint32_t buf_index;
     uint8_t *start_buf;
     uint32_t hdrid;
+    char *start_dst_buffer = dst;
 
-    *string_length = 0;
+    *stringLength = 0;
 
     *next_index = index;
 
@@ -390,6 +391,10 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
         //dst += sprintf(dst, "[%d:%d] ", hdr->id, hdr->length);
     }
 
+    auto timestampLength = (int)(dst - start_dst_buffer);
+
+
+
     // Move the stack index
     //buf_index = indexInc(index, sizeof(header));
     buf_index = indexInc(0, sizeof(Header));
@@ -398,9 +403,10 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
     s = &hdr->format[0];
     start_buf = (uint8_t *)hdr;
 
-    auto ret = stringFormat_->decodeStringFormat(s, start_buf, dst,
+    int decodeLength = 0;
+    auto ret = stringFormat_->encodeStringFormat(s, start_buf, dst,
                                                  hdr->length - sizeof(Trailer),
-                                                 &buf_index, string_length);
+                                                 &buf_index, &decodeLength);
     if (ret < 0) {
         return ret;
     }
@@ -408,6 +414,7 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
     // Adding extra trailer bytes, and return it the incoming index
     //*next_index = LOG_MEM_ALIGN(buf_index, sizeof(Trailer));
     *next_index = LOG_MEM_ALIGN(indexInc(buf_index, index) + sizeof(Trailer));
+    *stringLength = decodeLength + timestampLength;
 
     // For statistic
     lastPrintedId_ = hdrid;
