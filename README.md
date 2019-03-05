@@ -27,3 +27,12 @@ cat rxtrace.txt
 # benchmark
 
 350ms for 1M logs on Macbook Air i5
+```
+./memlogTest
+[2019 Mar  5 03:12:14.760732000:0:I:main:20] Hello world 1000!
+[2019 Mar  5 03:12:14.760766000:1:I:main:21] Hello world 1001!
+[2019 Mar  5 03:12:14.760766000:2:I:main:22] Hello world 1002!
+1 millions write in 253829 microseconds
+
+Process finished with exit code 0
+```
