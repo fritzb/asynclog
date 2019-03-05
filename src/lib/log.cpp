@@ -29,7 +29,7 @@ limitations under the License.
 #include <pthread.h>
 #include <inttypes.h>
 
-#include "asynclog.h"
+#include "log.h"
 #include "ringbuffer.h"
 #include "stringformat.h"
 

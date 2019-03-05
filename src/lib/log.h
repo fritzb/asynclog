@@ -13,8 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef __ASYNCLOG_H__
-#define __ASYNCLOG_H__
+#ifndef ASYNCLOG_LOG_H
+#define ASYNCLOG_LOG_H
 
 #include <stdint.h>
 #include <time.h>

@@ -19,7 +19,7 @@ limitations under the License.
 
 #include <unistd.h>
 #include "stream.h"
-#include "asynclog.h"
+#include "log.h"
 
 void Log::Collect::idle () {
     usleep(SLEEP_USEC);
