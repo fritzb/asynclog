@@ -1,6 +1,6 @@
 # memlog
 High performance thread-safe in-memory logging with lockless ring buffer data structure.
-The library is efficiently fast and completely non-blocking (true non-blocking as no system call will be used when producing the log). The in-memory buffer will be persisted to a log file asynchronously.
+The library is efficiently fast and completely non-blocking (true non-blocking as no system call are used when producing the log). The in-memory buffer can be persisted to a log file asynchronously.
 
 Example:
 ```
