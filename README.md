@@ -26,4 +26,4 @@ cat rxtrace.txt
 
 # benchmark
 
-1 millions log took 350ms
+350ms for 1M logs on Macbook Air i5
