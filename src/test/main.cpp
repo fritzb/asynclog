@@ -21,4 +21,5 @@ int main() {
     log->info("Hello world %d!\n", 1001L);
     log->info("Hello world %d!\n", 1002L);
     log->dump();
+    //performance_test1(log);
 }
