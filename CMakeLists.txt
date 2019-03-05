@@ -32,4 +32,4 @@ add_executable(memlogTest
         src/lib/stringformat.h
         src/test/main.cpp)
 
-#target_link_libraries(memlogTest pthread)
+target_link_libraries(memlogTest pthread)
