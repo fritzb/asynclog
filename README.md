@@ -26,17 +26,17 @@ cat rxtrace.txt
 
 # benchmark
 
-Memlog is 2x faster than calling sprintf library. Memlog stores traces in the memory for later retreival. Optionaly, the buffer can be spill to disk asynchronously.
+Memlog is 2x faster than calling plain sprintf library. Memlog stores all the log in the memory for later retrail and optionaly, the buffer can be spill to disk asynchronously. Memlog is also thread safe, and can be called by multiple threads sharing the log buffer.
 
 ```
 MEMLOG
-test: log->info("Hello world %d!\n", i)
+log->info("Hello world %d!\n", i)
 memlog: 10M logs/sec on Xeon servers
 memlog: 2M logs/sec on Macbook Air
 
 SPRINTF:
-test: sprintf(buffer, "Hello world %d!\n", i)
-sprintf: 5M logs/sec on Xeon servers
+sprintf(buffer, "Hello world %d!\n", i)
+sprintf: 5M sprintf/sec on Xeon servers
 ```
 
 ```
