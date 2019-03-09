@@ -26,6 +26,7 @@ cat rxtrace.txt
 
 # benchmark
 
+Memlog is 2x faster than calling sprintf library.
 ```
 MEMLOG
 test: log->info("Hello world %d!\n", i)
