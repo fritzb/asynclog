@@ -26,12 +26,16 @@ cat rxtrace.txt
 
 # benchmark
 
+```
+MEMLOG
+test: log->info("Hello world %d!\n", i)
 memlog: 10M logs/sec on Xeon servers
 memlog: 2M logs/sec on Macbook Air
 
-Comparison:
+SPRINTF:
+test: sprintf(buffer, "Hello world %d!\n", i)
 sprintf: 5M logs/sec on Xeon servers
-
+```
 
 ```
 void performance_test1(shared_ptr<Log> log) {
