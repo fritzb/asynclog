@@ -26,7 +26,8 @@ cat rxtrace.txt
 
 # benchmark
 
-Memlog is 2x faster than calling sprintf library.
+Memlog is 2x faster than calling sprintf library. Memlog stores traces in the memory for later retreival. Optionaly, the buffer can be spill to disk asynchronously.
+
 ```
 MEMLOG
 test: log->info("Hello world %d!\n", i)
