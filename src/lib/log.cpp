@@ -112,7 +112,7 @@ void Log::traceVargs(bool with_ts, const char *function_name, uint32_t line_numb
 
     va_start(va, s);
     dst += sizeof(Log::Header);
-    stringFormat_->decodeStringFormat(&dst, s, va);
+    stringFormat_->decodeStringFormat(s, va, &dst);
     va_end(va);
 
     // Copy the temporary buffer

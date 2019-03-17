@@ -23,8 +23,8 @@ limitations under the License.
 class StringFormat {
 
 public:
-    void decodeStringFormat(char **dst, const char *src, va_list va);
-    uint32_t encodeStringFormat(const char *s, uint8_t *start_buf, char *dst, int maxLen, uint32_t *buf_index_p,
+    void decodeStringFormat(const char *format, va_list args, char **outputString);
+    uint32_t encodeStringFormat(const char *format, uint8_t *start_buf, char *dst, int maxLen, uint32_t *buf_index_p,
                                 int *string_length);
 
 private:
