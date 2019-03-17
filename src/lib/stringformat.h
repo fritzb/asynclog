@@ -23,9 +23,9 @@ limitations under the License.
 class StringFormat {
 
 public:
-    void decodeStringFormat(const char *format, va_list args, char **outputString);
-    uint32_t encodeStringFormat(const char *format, uint8_t *start_buf, char *dst, int maxLen, uint32_t *buf_index_p,
-                                int *string_length);
+    void encodeToArgsBuffer(const char *format, va_list args, char **argsBuffer);
+    uint32_t decodeFromArgsBuffer(const char *format, uint8_t *argsBuffer, uint32_t *argsBufferIndexPtr,
+                                  char *outputString, int outputStringMaxLength, int *outputStringLength);
 
 private:
     uint32_t getStringCorruptedCount;

@@ -112,7 +112,7 @@ void Log::traceVargs(bool with_ts, const char *function_name, uint32_t line_numb
 
     va_start(va, s);
     dst += sizeof(Log::Header);
-    stringFormat_->decodeStringFormat(s, va, &dst);
+    stringFormat_->encodeToArgsBuffer(s, va, &dst);
     va_end(va);
 
     // Copy the temporary buffer
@@ -405,9 +405,12 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
     start_buf = (uint8_t *)hdr;
 
     int decodeLength = 0;
-    auto ret = stringFormat_->encodeStringFormat(s, start_buf, dst,
-                                                 hdr->length - sizeof(Trailer),
-                                                 &buf_index, &decodeLength);
+    auto ret = stringFormat_->decodeFromArgsBuffer(s,
+                                                   start_buf,
+                                                   &buf_index,
+                                                   dst,
+                                                   hdr->length - sizeof(Trailer),
+                                                   &decodeLength);
     if (ret < 0) {
         return ret;
     }

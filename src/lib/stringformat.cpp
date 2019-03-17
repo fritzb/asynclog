@@ -1,4 +1,4 @@
-/* Copyright 2019 memlog Authors. All Rights Reserved.
+    /* Copyright 2019 memlog Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ limitations under the License.
 #include "stringformat.h"
 #define LOG_MAX_LOG_TRACE_LINE (4096)
 
-// Decode C-like format with variable string into a flat string
-void StringFormat::decodeStringFormat(const char *format, va_list args, char **outputString) {
+// Store variable length arguments into args buffer
+void StringFormat::encodeToArgsBuffer(const char *format, va_list args, char **argsBuffer) {
     int i{ 0 };
     bool insidePercent{ false };
     uint8_t u8;
@@ -35,7 +35,7 @@ void StringFormat::decodeStringFormat(const char *format, va_list args, char **o
     uint64_t u64;
     double d;
     void *ptr;
-    char *dst{ *outputString };
+    char *dst{ *argsBuffer };
 
     while (format[i] != 0) {
         if (format[i] == '%') {
@@ -165,7 +165,7 @@ void StringFormat::decodeStringFormat(const char *format, va_list args, char **o
         i++;
     }
 
-    *outputString = dst;
+    *argsBuffer = dst;
 }
 
 uint32_t StringFormat::indexInc(uint32_t index, uint32_t v) {
@@ -194,33 +194,37 @@ void StringFormat::strlcpy(char *dst, const char *src, size_t siz) {
     }
 }
 
-uint32_t StringFormat::encodeStringFormat(const char *format, uint8_t *start_buf, char *dst, int maxLen,
-                                          uint32_t *buf_index_p, int *string_length) {
+uint32_t StringFormat::decodeFromArgsBuffer(const char *format,
+                                            uint8_t *argsBuffer,
+                                            uint32_t *argsBufferIndexPtr,
+                                            char *outputString,
+                                            int outputStringMaxLength,
+                                            int *outputStringLength) {
     void *ptr;
     double d;
     char tempFormat[32];
     uint32_t start, i;
-    bool eat;
+    bool consumed;
     uint64_t u64;
     uint32_t u32;
     uint8_t u8;
     uint16_t u16;
     int max_string;
     uint32_t string_len;
-    char *start_dst_buffer = dst;
-    uint32_t buf_index = *buf_index_p;
+    char *startOutputString = outputString;
+    uint32_t argsBufferIndex = *argsBufferIndexPtr;
 
     i = 0;
     while (format[i] != 0) {
         // PERCENT?
-        eat = false;
+        consumed = false;
         start = i;
         if (format[i] == '%') {
             i++;
 
             // %#x or %-2.2d or %+2.2x
             if (format[i] && (format[i] == '0' || format[i] == ' ' || format[i] == '#' ||
-                         format[i] == '-' || format[i] == '+')) {
+                    format[i] == '-' || format[i] == '+')) {
                 i++;
             }
 
@@ -255,10 +259,10 @@ uint32_t StringFormat::encodeStringFormat(const char *format, uint8_t *start_buf
                             case 'i':
                                 i++;
                                 strlcpy(tempFormat, &format[start], i-start + 1);
-                                u16 = memGetWord(start_buf, buf_index);
-                                buf_index = indexInc(buf_index, sizeof(u16));
-                                dst += sprintf(dst, tempFormat, u16);
-                                eat = true;
+                                u16 = memGetWord(argsBuffer, argsBufferIndex);
+                                argsBufferIndex = indexInc(argsBufferIndex, sizeof(u16));
+                                outputString += sprintf(outputString, tempFormat, u16);
+                                consumed = true;
                                 break;
                             case 'h':
                                 i++;
@@ -269,10 +273,10 @@ uint32_t StringFormat::encodeStringFormat(const char *format, uint8_t *start_buf
                                     case 'o':
                                         i++;
                                         strlcpy(tempFormat, &format[start], i-start + 1);
-                                        u16 = memGetWord(start_buf, buf_index);
-                                        buf_index = indexInc(buf_index, sizeof(u16));
-                                        dst += sprintf(dst, tempFormat, u16);
-                                        eat = true;
+                                        u16 = memGetWord(argsBuffer, argsBufferIndex);
+                                        argsBufferIndex = indexInc(argsBufferIndex, sizeof(u16));
+                                        outputString += sprintf(outputString, tempFormat, u16);
+                                        consumed = true;
                                         break;
                                 }
                         }
@@ -281,10 +285,10 @@ uint32_t StringFormat::encodeStringFormat(const char *format, uint8_t *start_buf
                     case 'c':
                         i++;
                         strlcpy(tempFormat, &format[start], i-start + 1);
-                        u8 = memGetByte(start_buf, buf_index);
-                        buf_index = indexInc(buf_index, sizeof(u8));
-                        dst += sprintf(dst, tempFormat, u8);
-                        eat = true;
+                        u8 = memGetByte(argsBuffer, argsBufferIndex);
+                        argsBufferIndex = indexInc(argsBufferIndex, sizeof(u8));
+                        outputString += sprintf(outputString, tempFormat, u8);
+                        consumed = true;
                         break;
 
                     case 'd':
@@ -294,55 +298,55 @@ uint32_t StringFormat::encodeStringFormat(const char *format, uint8_t *start_buf
                     case 'X':
                         i++;
                         strlcpy(tempFormat, &format[start], i-start + 1);
-                        u32 = memGetInt(start_buf, buf_index);
-                        buf_index = indexInc(buf_index, sizeof(u32));
-                        dst += sprintf(dst, tempFormat, u32);
-                        eat = true;
+                        u32 = memGetInt(argsBuffer, argsBufferIndex);
+                        argsBufferIndex = indexInc(argsBufferIndex, sizeof(u32));
+                        outputString += sprintf(outputString, tempFormat, u32);
+                        consumed = true;
                         break;
 
                     case 'f':
                         i++;
                         strlcpy(tempFormat, &format[start], i-start + 1);
-                        d = memGetDouble(start_buf, buf_index);
-                        buf_index = indexInc(buf_index, sizeof(d));
-                        dst += sprintf(dst, tempFormat, d);
-                        eat = true;
+                        d = memGetDouble(argsBuffer, argsBufferIndex);
+                        argsBufferIndex = indexInc(argsBufferIndex, sizeof(d));
+                        outputString += sprintf(outputString, tempFormat, d);
+                        consumed = true;
                         break;
 
                     case 'p':
                         i++;
                         strlcpy(tempFormat, &format[start], i-start + 1);
-                        ptr = (void *)memGetPtr(start_buf, buf_index);
-                        buf_index = indexInc(buf_index, sizeof(void *));
-                        dst += sprintf(dst, tempFormat, ptr);
-                        eat = true;
+                        ptr = (void *)memGetPtr(argsBuffer, argsBufferIndex);
+                        argsBufferIndex = indexInc(argsBufferIndex, sizeof(void *));
+                        outputString += sprintf(outputString, tempFormat, ptr);
+                        consumed = true;
                         break;
 
-                        // string
+                    // string
                     case 's':
                         i++;
                         strlcpy(tempFormat, &format[start], i-start + 1);
                         //printf("%format\n", tempFormat);
 
-                        //string_len = getString(buf_index, dst);
-                        //string_len = memGetString(start_buf, buf_index, dst);
+                        //string_len = getString(argsBufferIndex, outputString);
+                        //string_len = memGetString(argsBuffer, argsBufferIndex, outputString);
 
                         // max_string is the maximum possible string length
                         // (excluding the null terminated char) in the buffer
-                        max_string = ((maxLen) - buf_index) - 1;
+                        max_string = ((outputStringMaxLength) - argsBufferIndex) - 1;
                         if (max_string < 0) {
                             getStringCorruptedCount++;
                             return -1;
                         }
 
-                        string_len = memGetString( start_buf, buf_index, dst, max_string);
-                        dst += string_len;
+                        string_len = memGetString(argsBuffer, argsBufferIndex, outputString, max_string);
+                        outputString += string_len;
 
-                        buf_index = indexInc(buf_index, string_len + 1);
-                        eat = true;
+                        argsBufferIndex = indexInc(argsBufferIndex, string_len + 1);
+                        consumed = true;
                         break;
 
-                        // %lld %llu %llx
+                    // %lld %llu %llx
                     case 'l':
                         i++;
                         switch (format[i]) {
@@ -351,10 +355,10 @@ uint32_t StringFormat::encodeStringFormat(const char *format, uint8_t *start_buf
                                 if (format[i] && (format[i] == 'd' || format[i] == 'i' || format[i] == 'x' || format[i] == 'u' || format[i] == 'X')) {
                                     i++;
                                     strlcpy(tempFormat, &format[start], i-start + 1);
-                                    u64 = memGetLong64(start_buf, buf_index);
-                                    buf_index = indexInc(buf_index, sizeof(u64));
-                                    dst += sprintf(dst, tempFormat, u64);
-                                    eat = true;
+                                    u64 = memGetLong64(argsBuffer, argsBufferIndex);
+                                    argsBufferIndex = indexInc(argsBufferIndex, sizeof(u64));
+                                    outputString += sprintf(outputString, tempFormat, u64);
+                                    consumed = true;
                                 }
                                 break;
 
@@ -365,19 +369,19 @@ uint32_t StringFormat::encodeStringFormat(const char *format, uint8_t *start_buf
                             case 'X':
                                 i++;
                                 strlcpy(tempFormat, &format[start], i-start + 1);
-                                u32 = memGetInt(start_buf, buf_index);
-                                buf_index = indexInc(buf_index, sizeof(u32));
-                                dst += sprintf(dst, tempFormat, u32);
-                                eat = true;
+                                u32 = memGetInt(argsBuffer, argsBufferIndex);
+                                argsBufferIndex = indexInc(argsBufferIndex, sizeof(u32));
+                                outputString += sprintf(outputString, tempFormat, u32);
+                                consumed = true;
                                 break;
 
                             case 'f':
                                 i++;
                                 strlcpy(tempFormat, &format[start], i-start + 1);
-                                d = memGetDouble(start_buf, buf_index);
-                                buf_index = indexInc(buf_index, sizeof(d));
-                                dst += sprintf(dst, tempFormat, d);
-                                eat = true;
+                                d = memGetDouble(argsBuffer, argsBufferIndex);
+                                argsBufferIndex = indexInc(argsBufferIndex, sizeof(d));
+                                outputString += sprintf(outputString, tempFormat, d);
+                                consumed = true;
                                 break;
 
                             default:
@@ -387,8 +391,8 @@ uint32_t StringFormat::encodeStringFormat(const char *format, uint8_t *start_buf
 
                     case '%':
                         i++;
-                        dst += sprintf(dst, "%%");
-                        eat = true;
+                        outputString += sprintf(outputString, "%%");
+                        consumed = true;
                         break;
 
                     default:
@@ -398,22 +402,22 @@ uint32_t StringFormat::encodeStringFormat(const char *format, uint8_t *start_buf
         }
 
         // Copy
-        if (!eat) {
+        if (!consumed) {
             i = start;
-            *dst = format[i];
-            dst++;
+            *outputString = format[i];
+            outputString++;
             i++;
         }
 
         // TODO: bound check
     }
-    *dst = 0;
+    *outputString = 0;
 
-    if (dst > start_dst_buffer) {
-        *string_length = ((int)(dst - start_dst_buffer));
+    if (outputString > startOutputString) {
+        *outputStringLength = ((int)(outputString - startOutputString));
     }
 
-    *buf_index_p = buf_index;
+    *argsBufferIndexPtr = argsBufferIndex;
 
     return 0;
 }
