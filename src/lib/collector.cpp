@@ -21,6 +21,8 @@ limitations under the License.
 #include "stream.h"
 #include "log.h"
 
+using namespace memlog;
+
 void Log::Collect::idle () {
     usleep(SLEEP_USEC);
 

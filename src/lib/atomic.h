@@ -20,28 +20,34 @@ limitations under the License.
 #ifndef MEMLOG_ATOMIC_H
 #define MEMLOG_ATOMIC_H
 
-
 #include <cstdint>
 
-class Atomic64 {
-public:
-    Atomic64(uint64_t initial);
-    uint64_t addAndGet(uint64_t add);
+namespace memlog {
 
-private:
-    uint64_t atomic64Add(uint32_t *lowBit, uint32_t *highBit, uint32_t n);
-    uint64_t value_;
-};
+    class Atomic64 {
+    public:
+        Atomic64(uint64_t initial);
 
-class Atomic32 {
-public:
-    Atomic32(uint32_t initial);
-    uint32_t addAndGet(uint32_t add);
-    uint32_t getAndAdd(uint32_t add);
+        uint64_t addAndGet(uint64_t add);
 
-private:
-    uint32_t value_;
-};
+    private:
+        uint64_t atomic64Add(uint32_t *lowBit, uint32_t *highBit, uint32_t n);
 
+        uint64_t value_;
+    };
+
+    class Atomic32 {
+    public:
+        Atomic32(uint32_t initial);
+
+        uint32_t addAndGet(uint32_t add);
+
+        uint32_t getAndAdd(uint32_t add);
+
+    private:
+        uint32_t value_;
+    };
+
+}
 
 #endif //ASYNCLOG_ATOMIC_H

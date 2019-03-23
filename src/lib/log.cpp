@@ -35,6 +35,7 @@ limitations under the License.
 #include "stringformat.h"
 
 using namespace std;
+using namespace memlog;
 
 uint32_t Log::getTime(struct timespec *ts, char *ts_buf, unsigned int ts_buf_size) {
     struct tm result;
@@ -103,16 +104,16 @@ uint32_t Log::getLastWrittenIndex() {
 //    ((ret + (sizeof(void *) - 1)) & ~(sizeof(void *) - 1))
 
 #define LOG_MAX_LOG_TRACE_LINE 4096
-void Log::traceVargs(bool with_ts, const char *function_name, uint32_t line_number, char tag, const char *s, ...) {
+void Log::traceVargs(bool withTs, const char *functionName, uint32_t lineNumber, char tag, const char *format, ...) {
     va_list va;
     uint32_t location;
     uint32_t buffer_len, allignedBufferLen;
     char buffer[LOG_MAX_LOG_TRACE_LINE + 1];
     char *dst = buffer;
 
-    va_start(va, s);
+    va_start(va, format);
     dst += sizeof(Log::Header);
-    stringFormat_->decodeStringFormat(&dst, s, va);
+    stringFormat_->encodeToArgsBuffer(format, va, &dst);
     va_end(va);
 
     // Copy the temporary buffer
@@ -140,7 +141,7 @@ void Log::traceVargs(bool with_ts, const char *function_name, uint32_t line_numb
     location = ringBuffer_->allocate(allignedBufferLen);
 
     // Write header
-    setHeader(buffer, function_name, line_number, tag, s, with_ts, buffer_len, location, id);
+    setHeader(buffer, functionName, lineNumber, tag, format, withTs, buffer_len, location, id);
 
     // Copy buffer to circular buffer
     ringBuffer_->set(location, (uint8_t *) buffer, allignedBufferLen);
@@ -405,9 +406,12 @@ int Log::printAtIndex(uint32_t index, char *dst, uint32_t *next_index,
     start_buf = (uint8_t *)hdr;
 
     int decodeLength = 0;
-    auto ret = stringFormat_->encodeStringFormat(s, start_buf, dst,
-                                                 hdr->length - sizeof(Trailer),
-                                                 &buf_index, &decodeLength);
+    auto ret = stringFormat_->decodeFromArgsBuffer(s,
+                                                   start_buf,
+                                                   &buf_index,
+                                                   dst,
+                                                   hdr->length - sizeof(Trailer),
+                                                   &decodeLength);
     if (ret < 0) {
         return ret;
     }

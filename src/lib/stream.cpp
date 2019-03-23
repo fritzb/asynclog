@@ -23,6 +23,8 @@ limitations under the License.
 #include <memory>
 #include "stream.h"
 
+using namespace memlog;
+
 Stream::Stream() : fileHandle_(nullptr) {
 }
 
