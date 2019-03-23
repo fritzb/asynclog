@@ -19,6 +19,8 @@ limitations under the License.
 
 #include "atomic.h"
 
+using namespace memlog;
+
 Atomic64::Atomic64(uint64_t initial) :
         value_(initial) {
 }

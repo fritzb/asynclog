@@ -25,6 +25,8 @@ limitations under the License.
 #include "stringformat.h"
 #define LOG_MAX_LOG_TRACE_LINE (4096)
 
+using namespace memlog;
+
 // Store variable length arguments into args buffer
 void StringFormat::encodeToArgsBuffer(const char *format, va_list args, char **argsBuffer) {
     int i{ 0 };

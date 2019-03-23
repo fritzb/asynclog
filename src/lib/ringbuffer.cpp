@@ -20,6 +20,8 @@ limitations under the License.
 #include <cstring>
 #include "ringbuffer.h"
 
+using namespace memlog;
+
 RingBuffer::RingBuffer(unsigned int size, bool threadSafe)
         : size_(size), buffer_(new uint8_t[size]()), marker_(MARKER), version_(VERSION), threadSafe_(threadSafe) {
 }
