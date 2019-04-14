@@ -13,12 +13,12 @@ int main() {
 }
 ```
 
-Standard Output (stdout):
+dump() call will spill the logging buffer into Standard Output (stdout):
 ```
 [2019 Mar  4 17:36:16.442382600:0:I:main:6] Hello world 1000!
 ```
 
-File output (collected asynchronously):
+When configured with asynchronously log-to-file, logging buffer will be written to File output in the background:
 ```
 cat rxtrace.txt
 [2019 Mar  4 17:36:16.442382600:0:I:main:6] Hello world 1000!
