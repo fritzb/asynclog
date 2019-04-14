@@ -27,8 +27,8 @@ namespace memlog {
 // RingBuffer class
     class RingBuffer {
     public:
-        static const uint64_t MARKER = 0xfeedf000faeef0feLL;
-        static const uint32_t VERSION = 1;
+        static constexpr uint64_t MARKER = 0xfeedf000faeef0feLL;
+        static constexpr uint32_t VERSION = 1;
         typedef uint32_t Location;
         struct Stats {
             uint32_t indexWrapAroundCount;
