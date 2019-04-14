@@ -29,8 +29,8 @@ namespace memlog {
 
     class Stream {
     public:
-        static const unsigned int LOG_STREAM_BUFFER_SIZE = 1024 * 1024;
-        static const unsigned int LOG_STREAM_COMPRESSED_BUFFER_SIZE = 1024 * 1024;
+        static constexpr unsigned int LOG_STREAM_BUFFER_SIZE = 1024 * 1024;
+        static constexpr unsigned int LOG_STREAM_COMPRESSED_BUFFER_SIZE = 1024 * 1024;
 
         static std::shared_ptr<Stream> stdoutStream;
 
@@ -64,13 +64,13 @@ namespace memlog {
 
         static std::shared_ptr<Stream> create(FILE *file, Stream::CompressedMode mode = UNCOMPRESSED);
 
-        void write(char *s, unsigned len);
+        virtual void write(char *s, unsigned len);
 
-        int flush();
+        virtual int flush();
 
         Stream::Stats getStats();
 
-        void dumpState(char *buffer, int length) const;
+        virtual void dumpState(char *buffer, int length) const;
 
         Stream();
 
@@ -86,16 +86,16 @@ namespace memlog {
 
     class StreamBuffered : public Stream {
     public:
-        int flush();
+        int flush() override;
 
-        void write(char *s, unsigned len);
+        void write(char *s, unsigned len) override;
 
         StreamBuffered();
 
     protected:
         int empty();
 
-        void cleanup();
+        void cleanup() override;
 
         int bufferHasRoom(unsigned len);
 
@@ -115,7 +115,7 @@ namespace memlog {
         CompressedBuffered();
 
     protected:
-        void cleanup();
+        void cleanup() override;
 
         char *compressedBuffer;
 

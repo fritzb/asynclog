@@ -29,11 +29,11 @@ namespace memlog {
 
     class Log {
     public:
-        static const uint32_t DEFAULT_BUFFER_SIZE = 20 * 1024 * 1024;
-        static const uint64_t MARKER = 0xaf1cfeefbeefae0dLL;
-        static const uint32_t VERSION = 1;
-        static const uint32_t START_PATTERN = 0xbeedface;
-        static const uint32_t END_PATTERN = 0xfadebeef;
+        static constexpr uint32_t DEFAULT_BUFFER_SIZE = 20 * 1024 * 1024;
+        static constexpr uint64_t MARKER = 0xaf1cfeefbeefae0dLL;
+        static constexpr uint32_t VERSION = 1;
+        static constexpr uint32_t START_PATTERN = 0xbeedface;
+        static constexpr uint32_t END_PATTERN = 0xfadebeef;
 
         enum Level {
             off,
@@ -173,13 +173,13 @@ namespace memlog {
 
     class Log::Collect {
     public:
-        static const int DEFAULT_BUFFER_THRESHOLD_PCT = 0;
+        static constexpr int DEFAULT_BUFFER_THRESHOLD_PCT = 0;
         // Sleep time is 100ms
-        static const int SLEEP_USEC = 100000;
+        static constexpr int SLEEP_USEC = 100000;
         // Spin sleep time is 10ms
-        static const int SPIN_USEC = 100000;
-        static const int SPINS = 10;
-        static const int FLUSH_IN_SEC = 10;
+        static constexpr int SPIN_USEC = 100000;
+        static constexpr int SPINS = 10;
+        static constexpr int FLUSH_IN_SEC = 10;
 
         bool getEnable() const;
 
