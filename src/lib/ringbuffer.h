@@ -17,9 +17,7 @@ limitations under the License.
 // Thread-safe RingBuffer class
 //
 
-#ifndef MEMLOG_RINGBUFFER_H
-#define MEMLOG_RINGBUFFER_H
-
+#pragma once
 #include <stdint.h>
 
 namespace memlog {
@@ -82,4 +80,3 @@ namespace memlog {
         inline bool isIndexRollingOver(uint32_t index) const { return (index > (UINT32_MAX - 10240)); }
     };
 }
-#endif //ASYNCLOG_RINGBUFFER_H

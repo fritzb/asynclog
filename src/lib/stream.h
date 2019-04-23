@@ -17,9 +17,7 @@ limitations under the License.
 // Stream class
 //
 
-#ifndef MEMLOG_STREAM_H
-#define MEMLOG_STREAM_H
-
+#pragma once
 #include <stdint.h>
 #include <stdio.h>
 #include <memory>
@@ -123,4 +121,3 @@ namespace memlog {
         unsigned int compressedBufferSize;
     };
 }
-#endif //ASYNCLOG_STREAM_H

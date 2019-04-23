@@ -16,10 +16,7 @@ limitations under the License.
 //
 // Atomic class
 //
-
-#ifndef MEMLOG_ATOMIC_H
-#define MEMLOG_ATOMIC_H
-
+#pragma once
 #include <cstdint>
 
 namespace memlog {
@@ -49,5 +46,3 @@ namespace memlog {
     };
 
 }
-
-#endif //ASYNCLOG_ATOMIC_H

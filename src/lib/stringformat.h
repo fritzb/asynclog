@@ -16,8 +16,7 @@ limitations under the License.
 // StringFromat class
 //
 
-#ifndef ASYNCLOG_STRINGFORMAT_H
-#define ASYNCLOG_STRINGFORMAT_H
+#pragma once
 
 namespace memlog {
     class StringFormat {
@@ -68,4 +67,3 @@ namespace memlog {
         uint32_t memGetString(uint8_t *buf, uint32_t buf_index, char *dst, uint32_t maxStringLength);
     };
 }
-#endif //ASYNCLOG_STRINGFORMAT_H
