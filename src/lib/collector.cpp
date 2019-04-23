@@ -45,13 +45,10 @@ void Log::Collect::setEnable(bool enabled) {
     if (enabled) {
         resetBookmark();
         enable_ = enabled;
-        if (pthread_create(&collectorThread_, NULL, executeWorkerThread, this)) {
-            throw new std::exception();
-        }
+        collectorThread_ = std::thread(&Log::Collect::executeWorkerThread, this);
     } else {
         flush();
         enable_ = enabled;
-        pthread_join(collectorThread_, nullptr);
     }
 }
 

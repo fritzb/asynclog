@@ -26,7 +26,7 @@ namespace memlog {
 
     class Atomic64 {
     public:
-        Atomic64(uint64_t initial);
+        Atomic64(std::uint64_t initial);
 
         uint64_t addAndGet(uint64_t add);
 

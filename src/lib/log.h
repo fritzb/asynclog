@@ -19,7 +19,7 @@ limitations under the License.
 #include <stdint.h>
 #include <time.h>
 #include <memory>
-#include <pthread.h>
+#include <thread>
 #include "ringbuffer.h"
 #include "stream.h"
 #include "stringformat.h"
@@ -197,7 +197,7 @@ namespace memlog {
 
     private:
         Log *log_;
-        pthread_t collectorThread_;
+        std::thread collectorThread_;
         uint32_t collectorBookmark_;
         uint32_t bufferThresholdPct_;
         uint32_t prevCollectRangeStart_;
